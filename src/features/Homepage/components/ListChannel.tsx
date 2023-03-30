@@ -10,6 +10,7 @@ export default function ListChannel() {
   const { lastJsonMessage, sendJsonMessage } = useSocket();
   const [showModalCreate, setShowModalCreate] = useState<boolean>(false);
   const userInfo = useSelector((state: RootState) => state.user);
+  const listChannel = useSelector((state: RootState) => state.channel);
   let history = useHistory();
   const dispatch = useDispatch<AppDispatch>();
   const handleGetListChannelSuccess = (data: any) => {
@@ -17,6 +18,8 @@ export default function ListChannel() {
       setListItem(data?.params);
     }
   };
+console.log('be')
+  console.log(listChannel)
 
   const handleCreateChannel = (data: any) => {
     let param = {
@@ -80,7 +83,7 @@ export default function ListChannel() {
         case 65537: //Login
           break;
         case 262145: // Get List Channel
-          handleGetListChannelSuccess(lastJsonMessage);
+          // handleGetListChannelSuccess(lastJsonMessage);
           break;
         // case 262146: // Create Channel
         //   handleCreateChannelSuccess(lastJsonMessage);
@@ -108,7 +111,7 @@ export default function ListChannel() {
           <div>List Channel</div>
         </div>
         <div className="channel-list--box">
-          {listItem.map((item, index) => (
+          {listChannel?.data?.map((item, index) => (
             <ItemChannel
               avartar={item?.profile_image}
               name={item?.room_name}
