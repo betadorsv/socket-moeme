@@ -8,22 +8,8 @@ import { Provider } from "react-redux";
 import store from "./app/store/rootStore";
 import useWebSocket from "react-use-websocket";
 
-const SOCKET_URL = "wss://moeme-web-dev.aveapp.com";
 function App() {
-  const [socketUrl, setSocketUrl] = useState(SOCKET_URL);
 
-  const {
-    sendMessage,
-    sendJsonMessage,
-    lastMessage,
-    lastJsonMessage,
-    readyState,
-    getWebSocket,
-  } = useWebSocket(socketUrl, {
-    onOpen: () => console.log("opened"),
-    //Will attempt to reconnect on all close events, such as server shutting down
-    shouldReconnect: (closeEvent) => true,
-  });
   return (
     <Provider store={store}>
       <div className="moe-chat-app">
@@ -32,10 +18,10 @@ function App() {
           <Switch>
             <Redirect exact from="/" to="/login" />
             <Route path="/login">
-              <Login sendJsonMessage={sendJsonMessage} lastJsonMessage={lastJsonMessage} />
+              <Login  />
             </Route>
             <Route path="/home">
-              <Homepage sendJsonMessage={sendJsonMessage} lastJsonMessage={lastJsonMessage} />
+              <Homepage />
             </Route>
           </Switch>
         </BrowserRouter>
