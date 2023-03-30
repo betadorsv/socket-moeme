@@ -7,6 +7,7 @@ import useWebSocket, { ReadyState } from "react-use-websocket";
 import "./login.scss";
 import { setLoginLocalStorage } from "../../../utils";
 import { login } from "./loginSlice";
+import { useSocket } from "../../../hooks/useSocket";
 
 const SOCKET_URL = "wss://moeme-web-dev.aveapp.com";
 interface be{
@@ -14,15 +15,14 @@ interface be{
   lastJsonMessage:any
 }
 
-export default function Login({sendJsonMessage,lastJsonMessage}:be ) {
+export default function Login() {
   const [socketUrl, setSocketUrl] = useState(SOCKET_URL);
   let history = useHistory();
   const dispatch = useDispatch<AppDispatch>();
-  
+  const { lastJsonMessage, sendJsonMessage } = useSocket()
 
   const handleLogin = (e) => {
     e.preventDefault();
-    console.log(e.target[1].value);
     if (e.target[1].value.length <= 0 || e.target[0].value.length <= 0) {
       alert("khong duoc de trong");
     } else {
@@ -52,7 +52,6 @@ export default function Login({sendJsonMessage,lastJsonMessage}:be ) {
 
   useEffect(() => {
     if (lastJsonMessage) {
-      console.log(lastJsonMessage)
       switch (lastJsonMessage?.ptCommand) {
         case 65537:
           loginSuccess(lastJsonMessage);

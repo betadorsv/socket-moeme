@@ -34,7 +34,7 @@ Channel List
       min-height: 94vh;
 
       overflow-y: auto;
-   
+
       &--item {
         padding: 20px 10px;
         margin: 8px 0px;
@@ -44,14 +44,22 @@ Channel List
       }
     }
   }
+  &-contend {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
 }
 
 .channel-item {
-    cursor: pointer;
+  cursor: pointer;
   height: 100px;
-  width: 100%;
+
   border: 1px solid #ccc;
   border-radius: 10px;
+  margin: 12px;
   margin-top: 10px;
   display: flex;
   &--info {
@@ -60,6 +68,9 @@ Channel List
   &--thumnail {
     border-radius: 10px;
     img {
+      height: 100px;
+      width: 100px;
+      object-fit: cover;
       border-radius: 10px;
     }
   }
