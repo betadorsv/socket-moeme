@@ -1,5 +1,5 @@
 import { AppDispatch, RootState } from "app/store/rootStore";
-import ModalCreateChannel from "components/Common/ModalCreateChannel";
+
 import { useSocket } from "../../hooks/useSocket";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,6 +9,7 @@ import ItemChannel from "./components/ItemChannel";
 
 import "./Homepage.scss";
 import ListChannel from "./components/ListChannel";
+import FormCreateChannel from "./components/FormCreateChannel";
 
 interface ListChannelProp {
   lastJsonMessage: any;
@@ -56,7 +57,7 @@ function index() {
   return (
     <div className="channel">
       <ListChannel />
-      <ModalCreateChannel />
+      <FormCreateChannel />
     </div>
   );
 }
