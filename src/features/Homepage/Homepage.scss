@@ -1,0 +1,66 @@
+//Screen Channel
+
+/**
+Channel List
+*/
+.channel {
+  display: flex;
+  &-list {
+    width: 350px;
+    height: calc(100vh - 60px);
+
+    border-right: 1px solid #ccc;
+    &--title {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 10px;
+      align-items: center;
+      border-bottom: 1px solid #ccc;
+
+      button {
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 50px;
+        height: 30px;
+        width: 30px;
+      }
+      button:hover {
+        background-color: #ccc;
+      }
+    }
+
+    &--box {
+      max-height: 94vh;
+      min-height: 94vh;
+
+      overflow-y: auto;
+   
+      &--item {
+        padding: 20px 10px;
+        margin: 8px 0px;
+        display: flex;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+      }
+    }
+  }
+}
+
+.channel-item {
+    cursor: pointer;
+  height: 100px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin-top: 10px;
+  display: flex;
+  &--info {
+    padding: 10px 10px;
+  }
+  &--thumnail {
+    border-radius: 10px;
+    img {
+      border-radius: 10px;
+    }
+  }
+}
