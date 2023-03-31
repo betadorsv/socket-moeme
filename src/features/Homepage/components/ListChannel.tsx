@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import ItemChannel from "./ItemChannel";
 
 export default function ListChannel() {
-  const listChannel = useSelector((state: RootState) => state.channel);
+  const listChannel:any = useSelector((state: RootState) => state.channel);
   const userId = localStorage.getItem("userId");
 
 
