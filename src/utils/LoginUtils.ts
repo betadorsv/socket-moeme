@@ -28,11 +28,7 @@ const loadUserData = () => {
  * Remove data login in local storage
  */
 const signOutLocalStorage = () => {
-  localStorage.removeItem("accessToken");
-  localStorage.removeItem("email");
-  localStorage.removeItem("user");
-  localStorage.removeItem("data_access_expiration_time");
-  localStorage.removeItem("expiresIn");
+  localStorage.clear();
 };
 
 /**

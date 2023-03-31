@@ -12,7 +12,7 @@ function ItemChannel({ avartar, name, desc }: ItemChannelProps) {
       <div className="channel-item--thumnail">
         <img
           height={100}
-          src="https://media.wired.com/photos/6423826d7f6ce88e606d7b55/master/pass/Lamborghini-Revuelto-Featured-Gear.jpg"
+          src="https://www.lamborghini.com/sites/it-en/files/DAM/lamborghini/news/2023/03_29_revuelto/s1.jpg"
         />
       </div>
       <div className="channel-item--info">
