@@ -1,148 +1,161 @@
-import { useSocket } from '../../../hooks/useSocket';
-import React, { useEffect, useState } from 'react'
-import { Form, Button } from 'react-bootstrap';
+import React, { useEffect, useState } from "react";
+import {
+  Button,
+  Form,
+  Input,
+  Radio,
+  Select,
+  TextArea,
+} from "semantic-ui-react";
 import { v1 as uuidv1 } from "uuid";
+import { useSocket } from "../../../hooks/useSocket";
+import * as ptCommand from "../../../constants/ptCommant";
+import * as ptGroup from "../../../constants/ptGroup";
+
+const roomTypes = [
+  // { key: "1", text: "1:1 chat room", value: "1" },
+  { key: "2", text: "Multi user chat room", value: "2" },
+  // { key: "3", text: "Open chat room", value: "3" },
+  // { key: "4", text: "Public open chat room", value: "4" },
+  // { key: "5", text: "Myself chat room", value: "5" },
+  // { key: "6", text: "Notice chat room", value: "6" },
+];
+
 export default function FormCreateChannel() {
-    const [name, setName] = useState("");
-    const [desc, setDesc] = useState("");
-    const [roomType, setRoomType] = useState("");
-  
-    const { lastJsonMessage, sendJsonMessage } = useSocket();
-  
-  
-  
-  
-    const handleCreateChannel = (data: any) => {
-      let userId = localStorage.getItem("userId");
-      let param = {
-        ptCommand: 262146,
-        ptGroup: 262144,
-        ptDevice: "",
-        params: {
-          ...data,
-          userId: userId,
-        },
-      };
-      // sendJsonMessage(param);
-  
-    };
-    const handleCreateRoom = () => {
-      let params = {
+  const [roomName, setRoomName] = useState<string>("");
+  const [roomComment, setRoomComment] = useState<string>("");
+  const [roomType, setRoomType] = useState<string>("2");
+  const [openType, setOpenType] = useState<string>("1");
+  const { lastJsonMessage, sendJsonMessage } = useSocket();
+
+  const handleChangeRoomName = (e) => {
+    if (e.target.value.length < 20) {
+      //accept max is 20 charater
+      setRoomName(e.target.value);
+    } else {
+      let strimName = e.target.value?.slice(0, 20);
+      setRoomName(strimName);
+    }
+  };
+
+  const handleChangeRoomType = (e, { value }) => {
+    setRoomType(value);
+  };
+
+  const handleChangeOpenType = (e, { value }) => {
+    setOpenType(value);
+  };
+
+  const handleChangeRoomComment = (e, { value }) => {
+    setRoomComment(value);
+  };
+
+  const resetDataForm = () => {
+    setRoomName("");
+    setOpenType("1");
+    setRoomComment("");
+    setRoomType("2");
+  };
+
+  /**
+   * Send param create room channel
+   */
+  const handleCreateRoom = () => {
+    let userId = localStorage.getItem("userId");
+    let paramCreateChannel = {
+      ptCommand: ptCommand.CREATE_ROOM_CHANNEL,
+      ptGroup: ptGroup.CREATE_ROOM_CHANNEL,
+      ptDevice: "",
+      params: {
         enableWriteMsg: "0",
         roomProfileImage: "",
         roomId: uuidv1(),
-        roomName: name,
-        roomComment: desc,
+        roomName: roomName,
+        roomComment: roomComment,
         enableSearch: "1",
         roomType: Number(roomType),
-        chnl_open_type: "1",
+        chnl_open_type: openType,
         maxUser: "2000",
-      };
-  
-      let userId = localStorage.getItem("userId");
-      let param = {
-        ptCommand: 262146,
-        ptGroup: 262144,
-        ptDevice: "",
-        params: {
-          ...params,
-          userId: userId,
-        },
-      };
-      sendJsonMessage(param);
+        userId: userId,
+      },
     };
-  
-    const registerSocket = () => {
-      let atk = localStorage.getItem("atk"); //accessToken
-      let param = {
-        ptCommand: 65543,
-        ptGroup: 65536,
-        ptDevice: "",
-        params: {
-          atk: atk,
-        },
-      };
-      sendJsonMessage(param);
+    sendJsonMessage(paramCreateChannel);
+    resetDataForm();
+  };
+
+  /**
+   * Register socket before send message
+   */
+  const registerSocket = () => {
+    let atk = localStorage.getItem("atk"); //accessToken
+    let param = {
+      ptCommand: ptCommand.REGISTER_SOCKET,
+      ptGroup: ptGroup.REGISTER_SOCKET,
+      ptDevice: "",
+      params: {
+        atk: atk,
+      },
     };
-  
-  
-    const handleCreateChannelSuccess = (data: any) => {
-      if (data.result === "success") {
-        let userId = localStorage.getItem("userId");
-        let param = {
-          ptGroup: 262144,
-          ptCommand: 262145,
-          params: {
-            userId: userId,
-          },
-        };
-        sendJsonMessage(param);
-      }
-    };
-  
-    useEffect(() => {
-      if (lastJsonMessage) {
-        console.log('model');
-  
-        console.log(lastJsonMessage);
-        switch (lastJsonMessage?.ptCommand) {
-  
-          case 262146: // Create Channel
-            handleCreateChannelSuccess(lastJsonMessage);
-            break;
-          // case 65543: // Regsiter Socket
-          //   handleGetListChannel(lastJsonMessage);
-          // default:
-            break;
-        }
-      }
-    }, [lastJsonMessage]);
-  
-    useEffect(() => {
-  
-  
-        registerSocket();
-      
-    }, []);
-    return (
-      <div className="channel-contend">
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>Room Name</Form.Label>
-          <Form.Control
-            name="name"
-            onChange={(e) => setName(e?.target?.value)}
-            type="text"
-            placeholder="Enter Name"
+    sendJsonMessage(param);
+  };
+
+
+  useEffect(() => {
+    registerSocket();
+  }, []);
+  return (
+    <div className="channel-contend">
+      <div className="channel-contend--box">
+        <h1>Create Channel Room</h1>
+        <Form>
+          <Form.Group widths="equal">
+            <Form.Field
+              control={Input}
+              label="Room Name"
+              placeholder="Room Name"
+              onChange={handleChangeRoomName}
+              value={roomName}
+            />
+          
+            <Form.Field
+              control={Select}
+              onChange={handleChangeRoomType}
+              value={roomType}
+              label="Room Type"
+              disabled
+              options={roomTypes}
+              placeholder="Room Type"
+            />
+          </Form.Group>
+          <Form.Group inline>
+            <label>Channel Open Type</label>
+            <Form.Field
+              control={Radio}
+              label="Private"
+              value="0"
+              onChange={handleChangeOpenType}
+              checked={openType === "0"}
+            />
+            <Form.Field
+              control={Radio}
+              label="Public"
+              value="1"
+              onChange={handleChangeOpenType}
+              checked={openType === "1"}
+            />
+          </Form.Group>
+          <Form.Field
+            control={TextArea}
+            label="Room Comment"
+            onChange={handleChangeRoomComment}
+            value={roomComment}
+            placeholder="Tell us more about room..."
           />
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>Room Comment</Form.Label>
-          <Form.Control
-            type="text"
-            name="comment"
-            placeholder="Enter Comment"
-            onChange={(e) => setDesc(e?.target?.value)}
-          />
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>Room Type</Form.Label>
-          <Form.Select
-            name="type"
-            onChange={(e) => setRoomType(e?.target?.value)}
-          >
-            <option value="0">1:1 chat room</option>
-            <option value="1">Multi user chat room</option>
-            <option value="2">Open chat room</option>
-            <option value="3">Public open chat room</option>
-            <option value="4">Myself chat room</option>
-            <option value="5">Notice chat room</option>
-            <option value="6">Group chat room</option>
-          </Form.Select>
-        </Form.Group>
-  
-        <Button variant="primary" type="submit" onClick={handleCreateRoom}>
-          Submit
-        </Button>
+        </Form>
+        <button className="btn-submit" onClick={handleCreateRoom}>
+          Create
+        </button>
       </div>
-    );
+    </div>
+  );
 }
