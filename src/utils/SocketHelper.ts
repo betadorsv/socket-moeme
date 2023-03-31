@@ -1,9 +1,9 @@
 /**
  * Generator params socket
- * @param ptGroup 
- * @param ptCommand 
- * @param params 
- * @returns 
+ * @param ptGroup
+ * @param ptCommand
+ * @param params
+ * @returns
  */
 export const generatorParam = (
   ptGroup: number,
@@ -11,6 +11,7 @@ export const generatorParam = (
   params: Object
 ) => {
   return {
+    ptDevice: "",
     ptGroup: ptGroup,
     ptCommand: ptCommand,
     params: params,

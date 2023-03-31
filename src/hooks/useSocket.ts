@@ -2,7 +2,9 @@ import { AppDispatch } from "app/store/rootStore";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 import useWebSocket from "react-use-websocket";
+import { signOutLocalStorage } from "../utils";
 import * as ptCommand from "../constants/ptCommant";
 import * as ptGroup from "../constants/ptGroup";
 import { LastMessageSocket } from "../models/socket";
@@ -12,6 +14,7 @@ const SOCKET_URL = "wss://moeme-web-dev.aveapp.com";
 export const useSocket = () => {
   const [socketUrl, setSocketUrl] = useState(SOCKET_URL);
   const dispatch = useDispatch<AppDispatch>();
+  let history = useHistory();
   /**
    * init Socket
    */
@@ -56,6 +59,7 @@ export const useSocket = () => {
    * @param data Last message socket
    */
   const regsiterSocketSuccess = (data: LastMessageSocket) => {
+    console.log(data);
     if (data.result === "success") {
       handleGetListChannel();
     } else {
@@ -72,6 +76,19 @@ export const useSocket = () => {
     }
   };
 
+  /**
+   * Check socket message no have ptCommand
+   * @param data
+   */
+  const checkMessageResponse = (data: LastMessageSocket) => {
+    if (data.result === "error") {
+      if (data.reason === "token_invalid") {
+        toast.error("Token invalid pls login again");
+        signOutLocalStorage();
+        history.push("/login");
+      }
+    }
+  };
   /**
    * On Listen socket message event
    */
@@ -91,6 +108,7 @@ export const useSocket = () => {
           createChannelSuccess(lastJsonMessage);
           break;
         default:
+          checkMessageResponse(lastJsonMessage);
           break;
       }
     }
