@@ -1,6 +1,6 @@
-import { configureStore } from '@reduxjs/toolkit';
-import userReducer from '../../features/Login/Login/loginSlice'
-import channelReducer from "../../hooks/socketSlice"
+import { configureStore } from "@reduxjs/toolkit";
+import userReducer from "../../features/Login/Login/loginSlice";
+import channelReducer from "../../hooks/channelSlice";
 
 const store = configureStore({
   reducer: {

@@ -1,13 +1,20 @@
 import { AppDispatch } from "app/store/rootStore";
-import { getListChannel } from "./socketSlice";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import useWebSocket from "react-use-websocket";
+import * as ptCommand from "../constants/ptCommant";
+import * as ptGroup from "../constants/ptGroup";
+import { LastMessageSocket } from "../models/socket";
+import { getListChannel } from "./channelSlice";
+
 const SOCKET_URL = "wss://moeme-web-dev.aveapp.com";
 export const useSocket = () => {
   const [socketUrl, setSocketUrl] = useState(SOCKET_URL);
   const dispatch = useDispatch<AppDispatch>();
-  
+  /**
+   * init Socket
+   */
   const {
     sendMessage,
     sendJsonMessage,
@@ -16,30 +23,74 @@ export const useSocket = () => {
     readyState,
     getWebSocket,
   } = useWebSocket(socketUrl, {
-    onOpen: () => console.log("opened"),
+    onOpen: () => console.log("opened"), // on Socket Open
     //Will attempt to reconnect on all close events, such as server shutting down
     shouldReconnect: (closeEvent) => true,
   });
 
-  const handleGetListChannelSuccess = (data:any) =>{
-    if(data.result==="success"){
-      dispatch(getListChannel(data))
+  const getListChannelSuccess = (data: LastMessageSocket) => {
+    if (data.result === "success") {
+      dispatch(getListChannel(data)); // save list channel in to redux
+    } else {
+      toast.error(data.result);
     }
   };
 
+  /**
+   * Send param get list Channel
+   */
+  const handleGetListChannel = () => {
+    let userId = localStorage.getItem("userId");
+    let param = {
+      ptGroup: ptGroup.CHANNEL_LISTS,
+      ptCommand: ptCommand.CHANNEL_LISTS,
+      params: {
+        userId: userId,
+      },
+    };
+    sendJsonMessage(param);
+  };
+
+  /**
+   *
+   * @param data Last message socket
+   */
+  const regsiterSocketSuccess = (data: LastMessageSocket) => {
+    if (data.result === "success") {
+      handleGetListChannel();
+    } else {
+      toast.error(data.reason || "Pls check token and try again");
+    }
+  };
+
+  const createChannelSuccess = (data: LastMessageSocket) => {
+    if (data.result === "success") {
+      toast.success("Create channel success.");
+      handleGetListChannel(); //get and  update listchannel after create success
+    } else {
+      toast.error(data.reason || "Create channel error");
+    }
+  };
+
+  /**
+   * On Listen socket message event
+   */
   useEffect(() => {
     if (lastJsonMessage) {
-      console.log("hooook");
-
       console.log(lastJsonMessage);
-      console.log("hooook");
-
       switch (lastJsonMessage?.ptCommand) {
-
-        case 262145: // Get List Channel
-           handleGetListChannelSuccess(lastJsonMessage);
+        case ptCommand.LOGIN: // Create Channel
           break;
-
+        case ptCommand.CHANNEL_LISTS: // Get List Channel
+          getListChannelSuccess(lastJsonMessage);
+          break;
+        case ptCommand.REGISTER_SOCKET: // Regsiter Socket
+          regsiterSocketSuccess(lastJsonMessage);
+          break;
+        case ptCommand.CREATE_ROOM_CHANNEL: // createRoom Socket
+          createChannelSuccess(lastJsonMessage);
+          break;
+        default:
           break;
       }
     }

@@ -1,12 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface SocketState {
-  data:any;
+  data: any;
   [key: string]: any;
 }
 
 const initialState: SocketState = {
-  data: null
+  data: null,
 };
 
 const channelSlice = createSlice({
@@ -14,11 +14,10 @@ const channelSlice = createSlice({
   initialState,
   reducers: {
     getListChannel(state, action: PayloadAction<any>) {
-      state.data = action.payload.params
+      state.data = action.payload.params;
     },
-
     error(state) {
-        state.data = null
+      state.data = null;
     },
   },
 });
