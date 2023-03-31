@@ -45,6 +45,7 @@ Channel List
       }
     }
   }
+  /* Form input container**/
   &-contend {
     display: flex;
     flex-direction: column;
@@ -52,6 +53,11 @@ Channel List
     justify-content: center;
     width: 100%;
     &--box {
+      h1 {
+        //title of form input create channel
+        margin-bottom: 50px;
+        text-align: center;
+      }
       position: relative;
       border-radius: 20px;
       padding: 40px;
@@ -77,6 +83,7 @@ Channel List
   }
 }
 
+/*channel item card **/
 .channel-item {
   cursor: pointer;
   height: 140px;
@@ -137,6 +144,7 @@ Channel List
   }
 }
 
+/*btn create channel*/
 .btn-submit {
   color: white;
   margin-top: 20px;

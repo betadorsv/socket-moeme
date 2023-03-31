@@ -99,7 +99,7 @@ export default function FormCreateChannel() {
     sendJsonMessage(param);
   };
 
-  
+
   useEffect(() => {
     registerSocket();
   }, []);
@@ -116,6 +116,7 @@ export default function FormCreateChannel() {
               onChange={handleChangeRoomName}
               value={roomName}
             />
+          
             <Form.Field
               control={Select}
               onChange={handleChangeRoomType}
