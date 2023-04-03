@@ -89,7 +89,6 @@ Channel List
   height: 140px;
 
   padding: 20px;
-
   display: grid;
   grid-template-rows: 20px 50px 1fr 50px;
   border-radius: 10px;
@@ -120,9 +119,10 @@ Channel List
       white-space: nowrap;
     }
     p {
+
       font-size: 16px;
       padding: 8px px;
-      max-width: 280px;
+      max-width: 200px;
       max-height: 80px;
       display: -webkit-box;
       -webkit-line-clamp: 2;
