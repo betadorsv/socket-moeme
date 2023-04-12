@@ -14,35 +14,47 @@ export default function ChannelTalk() {
   const [messageArray, setMessageArray] = useState<any>([]);
   const [currentInput, setCurrentInput] = useState<number>(0);
   const textAreaRef = useRef();
+  const textAreaRefEdit = useRef();
+
   const messArr = useRef([]);
   const startCut = useRef(0);
   const indexArr = useRef(0);
   const rowLine = useRef(0);
 
-
   const onChangeMessage = (e) => {
-    let rowText= getTextareaNumberOfLines(textAreaRef.current)
-    rowLine.current=rowText;
+    let rowText = getTextareaNumberOfLines(textAreaRef.current);
+    if (rowText > 0) {
+      rowLine.current++;
+    }
+
     let value = e.target.value;
     if (onPaste) {
+      // console.log(object);
+      //   console.log(rowLine.current - 2);
+      if (rowLine.current > 2) {
+        rowLine.current = rowLine.current - 2;
+      }
       let result = cutMessageByLimit(value);
       messArr.current.push(...result);
-      // setMessage("");
-      // setOnpaste(false);
+      console.log(messArr);
+      if (rowText > 5) {
+        setMessage("");
+      }
+
+      setOnpaste(false);
     } else {
       /**
        * get text of page 1 if if the text is as long as the specified limit and  only slice text
        * find the nearest white space at the bounds to cut
        */
-
-      if (
-        rowText>5
-      ) {
-        let result = cutMessageByLimit(value);
-        messArr.current.push(...result);
+      rowLine.current = rowText;
+      if (rowText > 5) {
+        let text = { insert: value.substr(0, value.length) };
+        messArr.current.push(text);
         setMessage("");
-        setCurrentInput(currentInput + 1);
+        setMessageArray(messArr.current);
         value = "";
+        setCurrentInput(currentInput + 1);
       } else {
         setMessage(value);
       }
@@ -57,26 +69,34 @@ export default function ChannelTalk() {
   const cutMessageByLimit = (value: string) => {
     let fullText = "";
     let newArray = [];
+    let line = 5 - value.replace(/[^\n]/g, "").length;
 
     const result = splitStrings(value);
+    console.log(result);
     if (result.length > 0) {
       for (let index = 1; index <= result.length + 1; index++) {
         fullText = fullText + (result[index - 1] ? result[index - 1] : "");
-        if (index % 5 === 0 && index !== 0 && fullText !== undefined) {
-          //text mod 5 (5 is limit line)
+        console.log(line);
+
+        if (index % line === 0 && index !== 0 && fullText !== undefined) {
+          console.log(fullText);
           newArray.push({
             insert: fullText,
           });
+          rowLine.current = 0;
+          line = line + 5;
           fullText = "";
         } else if (index === result.length + 1 && fullText.length > 0) {
           newArray.push({
             insert: fullText,
           });
+          line = line + 5;
+
+          rowLine.current = 0;
           fullText = "";
         }
       }
     }
-
     setMessageArray([...messageArray, ...newArray]);
     return newArray;
   };
@@ -85,7 +105,7 @@ export default function ChannelTalk() {
     const result = [];
     let startIndex = 0;
 
-    let maxOfString = 50; //max Of String in 1 line;
+    let maxOfString = 52; //max Of String in 1 line;
 
     while (startIndex < str.length) {
       let substring = str.substr(startIndex, maxOfString);
@@ -98,7 +118,8 @@ export default function ChannelTalk() {
         while (
           endIndex < str.length &&
           str[endIndex] !== " " &&
-          str[endIndex] !== "\t"
+          str[endIndex] !== "\t" &&
+          str[endIndex] !== "\n"
         ) {
           endIndex++;
         }
@@ -107,95 +128,47 @@ export default function ChannelTalk() {
       result.push(substring.trim());
       startIndex += substring.length;
     }
-    console.log(result);
     return result;
   };
 
   /**
    * On edit message
-   * when edit only edit in this page, can't enter long more than number of limited 
+   * when edit only edit in this page, can't enter long more than number of limited
    * @param e
    */
   const onEditMessage = (e) => {
     let value = e.target.value;
-    if (value.length < MAX_TEXT) {
+    console.log(getTextareaNumberOfLines(textAreaRefEdit.current));
+    if (getTextareaNumberOfLines(textAreaRefEdit.current) < 5) {
       setMessageEdit(value);
       messArr.current[currentInput].insert = value;
       setArrayMessage(messArr);
-    } else {
-      setMessageEdit(value.substr(0, MAX_TEXT));
-      messArr.current[currentInput].insert = value.substr(0, MAX_TEXT);
-      setArrayMessage(messArr);
+    } else if (getTextareaNumberOfLines(textAreaRefEdit.current) === 5) {
+      {
+        setMessageEdit(value);
+        messArr.current[currentInput].insert = value;
+        setArrayMessage(messArr);
+      }
     }
   };
 
+  const getTextareaNumberOfLines = (textarea: any) => {
+    if (textarea) {
+      let height = textarea?.style?.height,
+        lines;
 
+      textarea.style.height = 0;
 
-
-  const handleTextChange = (e) => {
-    let value = e.target.value
-    const text:any = textAreaRef?.current ;
-    const linesArr = text.value.split("\n");
-    setMessage(value)
-    let row = text
-    for (let index = 0; index < value.length; index++) {
-      const element = value[index];
-      getTextareaNumberOfLines(text )
+      lines = parseInt(
+        String(
+          textarea.scrollHeight /
+            parseInt(getComputedStyle(textarea).lineHeight)
+        )
+      );
+      textarea.style.height = height;
+      return lines;
     }
-    
-    //  if(  getTextareaNumberOfLines(text)>5  ){
-    //   messArr.current[indexArr.current]= value;
-    //   indexArr.current++
-    //   setMessage("")
-    //   value=""
-    //   setArrayMessage(messArr.current)
-    //  }
-    // if (linesArr.length > 5) {
-    //   setLines(linesArr);
-    // }
   };
-  console.log(arrayMessage)
-//   const  numOfLines = (textArea, lineHeight) =>{
-//     var h0 = textArea.style.height;
-//     ta.style.height = 'auto';
-//     var h1 = textArea.scrollHeight;
-//     textArea.style.height = h0;
-//     return Math.ceil(h1 / lineHeight);
-// }
-
-const  getTextareaNumberOfLines = (textarea:any) =>{
-  var previous_height = textarea.style.height, lines
-  textarea.style.height = 0
-  lines = parseInt(textarea.scrollHeight/parseInt(getComputedStyle(textarea).lineHeight) )
-  textarea.style.height = previous_height
-   console.log(lines)
-  return lines
-}
-
-  
-
-const handlePaste = (event) => {
-  const clipboardData = event.clipboardData || window.clipboardData;
-  const pastedText = clipboardData.getData("text");
-  const textArea:any = textAreaRef.current;
-  textArea.focus();
-  const originalValue = textArea.value;
-  const selectionStart = textArea.selectionStart;
-  const selectionEnd = textArea.selectionEnd;
-  
-  const beforeSelection = originalValue.slice(0, selectionStart);
-  const afterSelection = originalValue.slice(selectionEnd);
-  const newValue = beforeSelection + pastedText + afterSelection;
-  textArea.value = newValue;
-  const lineHeight = parseInt(getComputedStyle(textArea).lineHeight);
-  const height = textArea.clientHeight;
-  const newRows = Math.round(height / lineHeight);
-  setMessage(newValue);
-  if (newRows > 5) {
-    // setArray([...array, newValue]);
-    console.log(newValue)
-  }
-};
 
   return (
     <div className="channel-talk">
@@ -207,18 +180,19 @@ const handlePaste = (event) => {
         {currentInput === messageArray.length ? (
           <textarea
             autoFocus
-            ref={textAreaRef} 
+            ref={textAreaRef}
             // onChange={handleTextChange}
             value={message}
             // onPaste={handlePaste}
-             onChange={onChangeMessage}
-             onPaste={() => setOnpaste(true)}
+            onChange={onChangeMessage}
+            onPaste={() => setOnpaste(true)}
           />
         ) : (
           <textarea
+            ref={textAreaRefEdit}
             value={edit ? messageEdit : messageArray[currentInput]?.insert}
             onChange={onEditMessage}
-            disabled={!edit}
+            // disabled={edit}
           />
         )}
         {currentInput + 1}/ {messageArray.length + 1}
